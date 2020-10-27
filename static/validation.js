@@ -7,6 +7,8 @@ let login = document.getElementById('login');
 let passwordCheck = document.getElementById('passwordCheck');
 let male = document.getElementById('male');
 let female = document.getElementById('female');
+let submit = document.getElementById('submit')
+let form = document.getElementById('registerForm')
 let dataToValid = [firstname, lastname, password, passwordCheck, login, male, female];
 
 
@@ -33,7 +35,6 @@ function valid(fieldName, value) {
         };
     } else if (fieldName === 'passwordCheck') {
         return {
-            // TODO
             isValid: value === password.value,
             errorMessage: "Oba hasła muszą być identyczne",
         };
@@ -58,6 +59,12 @@ login.addEventListener("change", function () {
     checkIfLoginIsFree(login, error)
 });
 
+submit.onclick = function() {
+    if(!validateMyForm()) {
+        return false;
+    }
+    
+}
 
 //adding listener for every needed field
 dataToValid.forEach(data => {
@@ -79,18 +86,17 @@ dataToValid.forEach(data => {
 });
 
 function validateMyForm() {
-    let error = document.getElementById("submit");
-    error = error.nextElementSibling;
+    error = document.getElementById("finalError");
     inputs = document.getElementsByTagName('input');
 
     for (var i = 0; i < inputs.length; ++i) {
-
         if (inputs[i].className !== "valid") {
-            error.innerHTML = "Wszystkie pola muszą zostać poprawnie wypełnione";
+            error.innerText = "Wszystkie pola muszą zostać poprawnie wypełnione";
             error.className = "error active";
             return false;
         }
     }
+    return true;
 }
 
 function checkIfLoginIsFree(loginField, errorField) {
@@ -103,6 +109,7 @@ function checkIfLoginIsFree(loginField, errorField) {
         response.onload = function () {
             var serverResponse = JSON.parse(this.responseText);
             if (serverResponse[loginString] === "available") {
+
                 login.className = "valid";
                 errorField.innerHTML = "";
                 errorField.className = "error";
