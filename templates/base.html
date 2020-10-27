@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="/static/style.css">
+<body>
+
+<div class="header">
+  <h1>PaczUszki - PackagEar</h1>
+  <p>Strona utworzona przez: <b>Michał Bogusz</b></p>
+</div>
+
+<div class="navbar">
+  <a href="/" class="active">Strona główna</a>
+  <a href="/sender/sign-up">Zarejestruj</a>
+</div>
+
+<div id="wrap">
+    {% block content %}{% endblock %}
+</div>
+
+<div class="footer">
+  2020 <a href="https://github.com/michalbogusz23/PackageEar">Źródło strony</a>
+</div>
+
+</body>
+<script type="text/javascript" src="/static/validation.js"></script>
+</html>

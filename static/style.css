@@ -1,17 +1,28 @@
 body {
     background-color: #777777;
+    width: 900px; 
+    margin: 0 auto;
 }
 
 form {
     background-color: #dddddd;
-    position: fixed; /* or absolute */
-    top: 50%;
-    left: 50%;
-    width: 50%;
-    transform: translate(-50%, -50%);
+    margin: 10px;
     padding: 30px;
 }
-
+.header {
+    padding: 60px;
+    text-align: center;
+    background: #1abc9c;
+    color: white;
+}
+.navbar {
+    text-align: center;
+    padding: 5px
+}
+.footer {
+    padding: 5px
+    text-align: center;
+}
 input {
     background-color: #eeeeee;
     padding: 15px;
