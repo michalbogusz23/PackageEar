@@ -1,5 +1,9 @@
-FROM nginx
+FROM python:3-slim
+WORKDIR /app
 
-COPY index.html /usr/share/nginx/html
-COPY validation.js /usr/share/nginx/html
-COPY style.css /usr/share/nginx/html
+ADD app.py .
+ADD requirements.txt .
+
+RUN python3 -m pip install -r requirements.txt
+
+CMD ["python", "app.py"]
