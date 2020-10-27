@@ -1,8 +1,7 @@
 FROM python:3-slim
 WORKDIR /app
 
-ADD app.py .
-ADD requirements.txt .
+ADD . .
 
 RUN python3 -m pip install -r requirements.txt
 
