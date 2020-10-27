@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="style.css">
+
+
+<body>
+<form method="POST" action="https://pi.iem.pw.edu.pl/register" enctype="multipart/form-data" onsubmit = "event.preventDefault(); validateMyForm();">
+    <h1>Stwórz konto</h1>
+    <div class="content">
+    <div class="left">
+        <label> Imię
+            <input type="text" name="firstname" id="firstname" class="name" placeholder="Imię"/>
+            <span class="error" aria-live="polite"></span>
+        </label>
+    </div>
+    <div class="right">
+        <label> Nazwisko
+            <input type="text" name="lastname" id="lastname" class="name" placeholder="Nazwisko"/>
+            <span class="error" aria-live="polite"></span>
+        </label>
+    </div>
+    <div class="clear">
+        <label>Hasło
+            <input type="password" name="password" id="password" placeholder="*********"/>
+            <span class="error" aria-live="polite"></span>
+        </label>
+        <label> Data urodzenia
+            <input type="date" name="birthdate" class="valid" id="birthdate" min="1900-01-01" required/>
+        </label>
+        <label> Login
+            <input type="text" name="login" id="login" placeholder="Login"/>
+            <span class="error" aria-live="polite"></span>
+            <span class="error" id="userExistError" aria-live="polite"></span>
+        </label>
+        <label> PESEL
+            <input type="text" name="pesel" id="pesel" placeholder="PESEL"/>
+            <span class="error" aria-live="polite"></span>
+        </label>
+        <label>Płeć:<br></label>
+        <label>Kobieta
+            <input type="radio" class="valid" name="sex" value="K" id="female" required>
+        </label>
+        <label>Mężczyzna
+            <input type="radio" class="valid" name="sex" value="M" id="male">
+        </label>
+
+        <label> Zdjęcie
+            <input type="file" name="photo" class="valid" required/>
+        </label>
+        
+        <input type="submit" class="valid" id="submit">
+        <span class="error" aria-live="polite"></span>
+        
+    </div>
+    </div>
+</form>
+</body>
+</html>
+<script type="text/javascript" src="validation.js"></script>
