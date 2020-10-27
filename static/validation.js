@@ -4,10 +4,10 @@ let firstname = document.getElementById('firstname');
 let lastname = document.getElementById('lastname');
 let password = document.getElementById('password');
 let login = document.getElementById('login');
-let pesel = document.getElementById('pesel');
+let passwordCheck = document.getElementById('passwordCheck');
 let male = document.getElementById('male');
 let female = document.getElementById('female');
-let dataToValid = [firstname, lastname, password, login, pesel, male, female];
+let dataToValid = [firstname, lastname, password, passwordCheck, login, male, female];
 
 
 var firstnameRegExp = new RegExp('[A-Z{PL}][a-z{pl}]+');
@@ -31,25 +31,17 @@ function valid(fieldName, value) {
             isValid: passwordRegExp.test(value),
             errorMessage: "Hasło musi posiadać powyżej 8 znaków angielskiego alfabetu",
         };
+    } else if (fieldName === 'passwordCheck') {
+        return {
+            // TODO
+            isValid: value === password.value,
+            errorMessage: "Oba hasła muszą być identyczne",
+        };
+
     } else if (fieldName === 'login') {
         return {
             isValid: loginRegExp.test(value),
             errorMessage: "Login musi zawierać od 3 do 12 małych znaków",
-        };
-    } else if (fieldName === 'pesel') {
-        if (value.length !== 11)
-            return {
-                isValid: false,
-                errorMessage: "Numer PESEL składa się z 11 cyfr",
-            };
-        let wk = 0, w = [1, 3, 7, 9];
-        for (i = 0; i < 10; i++) {
-            wk = (wk + parseInt(value[i]) * w[i % 4]) % 10;
-            var k = (10 - wk) % 10;
-        }
-        return {
-            isValid: parseInt(value[10]) === k,
-            errorMessage: "To nie jest poprawny numer PESEL",
         };
     } else if (fieldName === 'male' || fieldName === 'female') {
 
@@ -71,16 +63,16 @@ login.addEventListener("change", function () {
 dataToValid.forEach(data => {
     data.addEventListener("input", function () {
         let validation = valid(data.id, data.value);
-        let test = firstname.value.length === 0 || validation.isValid;
+        let test =  validation.isValid;
         let error = data;
         error = error.nextElementSibling;
         if (!test) {
             data.className = "invalid";
-            error.innerHTML = validation.errorMessage;
+            error.innerText = validation.errorMessage;
             error.className = "error active";
         } else {
             data.className = "valid";
-            error.innerHTML = "";
+            error.innerText = "";
             error.className = "error";
         }
     });
@@ -99,48 +91,28 @@ function validateMyForm() {
             return false;
         }
     }
-    if (validatePeselWithSex() === false) {
-        error.innerHTML = "Płeć niezgadza się z podanym loginem";
-        error.className = "error active";
-        return false;
-    } else {
-        error.innerHTML = "";
-        error.className = "error";
-        return true;
-    }
-}
-
-function validatePeselWithSex() {
-    let peselSexDigit = parseInt(pesel.value[9]);
-    let sexValue = document.querySelector('input[name="sex"]:checked').value;
-    if (peselSexDigit % 2 == 1) {
-        peselSexDigit = "M"
-    } else {
-        peselSexDigit = "F"
-    }
-    return peselSexDigit === sexValue;
 }
 
 function checkIfLoginIsFree(loginField, errorField) {
     return new Promise((resolve, reject) => {
         loginString = loginField.value;
-        const url = `https://pi.iem.pw.edu.pl/user/${loginString}`;
+        const url = `https://infinite-hamlet-29399.herokuapp.com/check/${loginString}`;
         var response = new XMLHttpRequest();
         response.open("GET", url);
 
         response.onload = function () {
-            if (response.status === 404) {
+            var serverResponse = JSON.parse(this.responseText);
+            if (serverResponse[loginString] === "available") {
                 login.className = "valid";
                 errorField.innerHTML = "";
                 errorField.className = "error";
                 resolve(true);
             }
-            else if (response.status === 200) {
+            else if (serverResponse[loginString] === "taken") {
                 login.className = "invalid";
                 errorField.innerHTML = "Podany login jest zajęty";
                 errorField.className = "error active";
                 resolve(false);
-
             }
         };
 
