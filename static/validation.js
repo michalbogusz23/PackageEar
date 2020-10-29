@@ -120,6 +120,11 @@ function checkIfLoginIsFree(loginField, errorField) {
                 errorField.innerHTML = "Podany login jest zajęty";
                 errorField.className = "error active";
                 resolve(false);
+            } else if (response.status !== 200) {
+                login.className = "invalid";
+                errorField.innerHTML = "Nasz serwer nie odpowiada. Przepraszamy :'(";
+                errorField.className = "error active";
+                resolve(false);
             }
         };
 
