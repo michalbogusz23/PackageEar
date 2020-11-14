@@ -4,6 +4,7 @@ from os import getenv
 from dotenv import load_dotenv
 from datetime import datetime
 import sys # for debugging
+from bcrypt import hashpw, gensalt, checkpw
 
 from redis import Redis
 db = Redis(host='redis', port=6379, db=0)
@@ -38,10 +39,11 @@ def register():
             empty_fields_counter += 1
         else:
             user[field] = data[field]
-    print(user)
+    
     if empty_fields_counter != 0:
         return redirect(url_for("register_form"))
 
+    save_user(user)
     return redirect(url_for("login_form"))
 
 @app.route('/sender/login', methods=['GET'])
@@ -52,10 +54,13 @@ def login_form():
 
 @app.route('/sender/login', methods=['POST'])
 def login():
-    user = request.form["login"]
-    session["user"] = user
-    session["login_date"] = datetime.now()
-    return redirect(url_for("user"))
+    login = request.form["login"]
+    password = request.form["password"]
+    if verify_user(login, password):
+        session["user"] = login
+        session["login_date"] = datetime.now()
+        return redirect(url_for("user"))
+    return redirect(url_for("login"))
 
 @app.route("/user")
 def user():
@@ -70,6 +75,32 @@ def sender_logout():
     session.clear()
     login = None
     return redirect(url_for("index"))
+
+
+def save_user(user):
+    salt = gensalt(5)
+    password = user['password'].encode()
+    hashed = hashpw(password, salt)
+    user['password'] = hashed
+
+    login = user['login']
+    del user['login']
+
+    db.hmset(f"user:{login}", user)
+
+    return True
+
+def verify_user(login, password):
+    password = password.encode()
+    hashed = db.hget(f'user:{login}', "password")
+    if not hashed:
+        print(f"ERROR: No password for {login}", file=sys.stderr)
+        return False
+
+    return checkpw(password, hashed)
+
+def is_user(login):
+    return db.hexists(f"user:{login}", "password")
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
