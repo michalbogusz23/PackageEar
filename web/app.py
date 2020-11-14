@@ -1,6 +1,13 @@
-from flask import Flask, render_template, request, make_response
+from flask import Flask, render_template, request, make_response, session, redirect, url_for
+# from flask_session import Session
+from os import getenv
+from dotenv import load_dotenv
+
+load_dotenv()
+
 app = Flask(__name__)
-app.debug = False
+
+app.secret_key = getenv('SECRET_KEY')
 
 @app.route('/')
 def index():
@@ -20,7 +27,22 @@ def login_form():
 
 @app.route('/sender/login', methods=['POST'])
 def login():
-    return response
+    user = request.form["login"]
+    session["user"] = user
+    return redirect(url_for("user"))
+
+@app.route("/user")
+def user():
+    if "user" in session:
+        user = session["user"]
+        return render_template("user.html", user=user)
+    else: 
+        return redirect(url_for("login"))
+
+@app.route("/sender/logout")
+def sender_logout():
+    session.clear()
+    return redirect(url_for("index"))
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
