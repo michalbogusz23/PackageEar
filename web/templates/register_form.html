@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<form method="POST" action="https://infinite-hamlet-29399.herokuapp.com/sender/register" enctype="multipart/form-data" id="registerForm">
+<form method="POST" action="/sender/register" id="registerForm">
     <h1>Stwórz konto</h1>
     <div class="content">
     <div class="left">
@@ -21,7 +21,7 @@
             <span class="error" aria-live="polite"></span>
         </label>
         <label>Potwierdź hasło
-            <input type="password" id="passwordCheck" placeholder="*********"/>
+            <input type="password" name="passwordCheck" id="passwordCheck" placeholder="*********"/>
             <span class="error" aria-live="polite"></span>
         </label>
         <label> Login
@@ -30,11 +30,11 @@
             <span class="error" id="userExistError" aria-live="polite"></span>
         </label>
         <label>E-mail
-            <input type="email" id="email" placeholder="E-mail"/>
+            <input type="email" name="email" id="email" placeholder="E-mail"/>
             <span class="error" aria-live="polite"></span>
         </label>
         <label>Adres zamieszkania
-            <input type="text" id="address" placeholder="Adres zamieszkania"/>
+            <input type="text" name="address" id="address" placeholder="Adres zamieszkania"/>
             <span class="error" aria-live="polite"></span>
         </label>
         <div><input type="submit" class="valid" id="submit"></div>
