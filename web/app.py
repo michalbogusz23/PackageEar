@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, make_response, session, redir
 # from flask_session import Session
 from os import getenv
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
@@ -23,12 +24,15 @@ def register():
 
 @app.route('/sender/login', methods=['GET'])
 def login_form():
+    if "user" in session:
+        return redirect(url_for("user"))
     return render_template("login_form.html")
 
 @app.route('/sender/login', methods=['POST'])
 def login():
     user = request.form["login"]
     session["user"] = user
+    session["login_date"] = datetime.now()
     return redirect(url_for("user"))
 
 @app.route("/user")
@@ -42,6 +46,7 @@ def user():
 @app.route("/sender/logout")
 def sender_logout():
     session.clear()
+    login = None
     return redirect(url_for("index"))
 
 if __name__ == '__main__':

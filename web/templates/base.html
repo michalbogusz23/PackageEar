@@ -12,9 +12,27 @@
 </div>
 
 <div class="navbar">
-  <a href="/" class="active">Strona główna</a>
-  <a href="/sender/register">Zarejestruj</a>
-  <a href="/sender/login">Zaloguj</a>
+  {% if session['user'] %}
+    <span class="nav_greeting">
+      <div>
+        Witaj {{session['user']}}!
+      </div> 
+      <div>
+        Zalogowano o: {{session['login_date']}}
+      </div>
+    </span>
+  {% endif %}
+  
+  <span class="nav">
+    <a href="/" class="active">Strona główna</a>
+    <a href="/sender/register">Zarejestruj</a>
+    <a href="/sender/login">Zaloguj</a>
+  </span>
+
+  {% if session['user'] %}
+    <span class="nav_logout"><a href="/sender/logout">Wyloguj</a></span>
+  {% endif %}
+
 </div>
 
 <div id="wrap">
