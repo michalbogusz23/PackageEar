@@ -27,19 +27,19 @@ form {
 }
 .nav {
     display:inline-block;    
-    width:33%;
+    width:40%;
     text-align: center;
 }
 .nav_greeting {
     padding-left: 10px;
     display:inline-block;    
-    width:33%;
+    width:30%;
 }
 .nav_logout {
     padding-right: 10px;
     text-align: right;
     display:inline-block;    
-    width:33%;
+    width:30%;
 }
 
 .footer {

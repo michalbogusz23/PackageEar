@@ -6,9 +6,14 @@ from datetime import datetime
 
 load_dotenv()
 
+# SESSION_TYPE="filesystem"
+# SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
-
+# app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
+
+# ses = Session(app)
+
 
 @app.route('/')
 def index():
