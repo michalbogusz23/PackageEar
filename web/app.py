@@ -13,7 +13,8 @@ load_dotenv()
 
 SESSION_TYPE="redis"
 SESSION_REDIS=db
-# SESSION_COOKIE_SECURE = True
+
+SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
@@ -122,4 +123,4 @@ def is_user(login):
     return db.hexists(f"user:{login}", "password")
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
