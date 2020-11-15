@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, make_response, session, redirect, url_for
+from flask import Flask, render_template, request, make_response, session, redirect, url_for, flash
 from flask_session import Session
 from os import getenv
 from dotenv import load_dotenv
@@ -34,16 +34,28 @@ def register():
     user = {}
     data = request.form
     fields = ("firstname", "lastname", "login", "email", "password", "passwordCheck", "address")
+
     for field in fields:
         if data[field] == '':
             empty_fields_counter += 1
         else:
             user[field] = data[field]
-    
     if empty_fields_counter != 0:
+        flash(f"Liczba brakujących pól: {empty_fields_counter}")
+        return redirect(url_for("register_form"))
+    
+    login = data["login"]
+
+    if is_user(login):
+        flash(f"Użytkownik: {login} już istnieje")
+        return redirect(url_for("register_form"))
+
+    if data["password"] != data["passwordCheck"]:
+        flash(f"Podane hasła nie są identyczne")
         return redirect(url_for("register_form"))
 
     save_user(user)
+    flash(f"Pomyślnie zarejestrowano! Zaloguj się poniżej")
     return redirect(url_for("login_form"))
 
 @app.route('/sender/login', methods=['GET'])
@@ -56,11 +68,18 @@ def login_form():
 def login():
     login = request.form["login"]
     password = request.form["password"]
-    if verify_user(login, password):
-        session["user"] = login
-        session["login_date"] = datetime.now()
-        return redirect(url_for("user"))
-    return redirect(url_for("login"))
+
+    if not login or not password:
+        flash("Brakuje loginu i/lub hasła")
+        return redirect(url_for("login_form"))
+
+    if not verify_user(login, password):
+        flash("Niewłaściwy login i/lub hasło")
+        return redirect(url_for("login_form"))
+
+    session["user"] = login
+    session["login_date"] = datetime.now()
+    return redirect(url_for("user"))
 
 @app.route("/user")
 def user():
