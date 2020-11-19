@@ -1,9 +1,9 @@
 # PackageEar
 
-docker build -t webapp .
-docker run --rm -p5000:5000 webapp
+docker-compose build
+docker-compose up
 
 W celu uruchomienia dockera należy skorzystać z powyższych komend
 
-Heroku:
-https://mighty-journey-25658.herokuapp.com
+Adres aplikacji:
+https://localhost:5000
