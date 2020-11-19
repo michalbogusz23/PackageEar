@@ -52,6 +52,26 @@ form {
     border-width: 1px;
 }
 
+.btn_wrapper {
+    display: flex; 
+    justify-content: flex-end
+}
+
+.add_btn {
+    float: right;
+    margin: 15px;
+    padding: 8px;
+    border-style: solid;
+    border-width: 2px;
+    background-color: #b36b00;
+}
+
+a.link {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
 .packages {
     background-color: #cc7a00;
     color: white;
@@ -79,10 +99,6 @@ form {
     width: 20%;
     border-style: solid;
     border-width: 1px;
-}
-
-.package {
-    font-style: oblique;
 }
 
 .footer {

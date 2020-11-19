@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 
+    <div class="btn_wrapper">
+        <a href="/package/add" class="link"><div class="add_btn">Dodaj paczkę</div></a>
+    </div>
+    
+
     {% if packages %}
     <div class="packages">
         {% for package in packages %}
@@ -11,9 +16,9 @@
                     <div><b>Rozmiar paczki:</b> {{ package.size }}</div>
                     <div><b>Identyfikator paczki:</b> {{ package.id }}</div>
                 </div>
-                <div class="package_delete">
-                    <p1>USUŃ</p1>
-                </div>
+                <a href="/package/delete/{{ package.id }}" class="link">
+                    <div class="package_delete"><p1>USUŃ</p1></div>
+                </a>    
             </div>
         {% endfor %}
     </div>
