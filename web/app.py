@@ -100,13 +100,6 @@ def sender_dashboard():
 
     packages = get_packages()
     
-    # packages = [{
-    #     "address": "Jablonna",
-    #     "boxId": "Jablonna-Stokrotka_1",
-    #     "size": "L",
-    #     "id": "123"
-    # },
-    # ]
     return render_template("packages.html", packages=packages)
 
 @app.route("/package/add", methods=["GET"])
@@ -138,11 +131,13 @@ def add_package():
         return "Database not working", 507
 
 @app.route("/package/delete/<id>")
-def delete_package():
+def delete_package(id):
     if "user" not in session:
         return 'Not authorized', 401
 
-    return render_template("packages.html", packages=packages)
+    delete_package_from_db(id)
+
+    return redirect(url_for("sender_dashboard"))
 
 def save_user(user):
     salt = gensalt(5)
@@ -191,6 +186,14 @@ def get_packages():
         packages.append(package)
 
     return packages
+
+def delete_package_from_db(id):
+    login = session["user"]
+    key = f"package:{login}:{id}"
+
+    db.delete(key)
+
+    return True
 
 def decode_redis(src):
     if isinstance(src, list):
