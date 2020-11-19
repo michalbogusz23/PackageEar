@@ -3,8 +3,9 @@ from flask_session import Session
 from os import getenv
 from dotenv import load_dotenv
 from datetime import datetime
-import sys # for debugging
 from bcrypt import hashpw, gensalt, checkpw
+import sys # for debugging
+import uuid
 
 from redis import Redis
 db = Redis(host='redis', port=6379, db=0)
@@ -19,7 +20,6 @@ app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
 ses = Session(app)
-
 
 @app.route('/')
 def index():
@@ -55,8 +55,13 @@ def register():
         flash(f"Podane hasła nie są identyczne")
         return redirect(url_for("register_form"))
 
-    save_user(user)
-    flash(f"Pomyślnie zarejestrowano! Zaloguj się poniżej")
+    user.pop("passwordCheck")
+
+    if save_user(user):
+        flash(f"Pomyślnie zarejestrowano! Zaloguj się poniżej")
+    else:
+        return "Database not working", 507
+    
     return redirect(url_for("login_form"))
 
 @app.route('/sender/login', methods=['GET'])
@@ -80,15 +85,7 @@ def login():
 
     session["user"] = login
     session["login_date"] = datetime.now()
-    return redirect(url_for("user"))
-
-@app.route("/user")
-def user():
-    if "user" in session:
-        user = session["user"]
-        return render_template("user.html", user=user)
-    else: 
-        return redirect(url_for("login"))
+    return redirect(url_for("index"))
 
 @app.route("/sender/logout")
 def sender_logout():
@@ -98,15 +95,54 @@ def sender_logout():
 
 @app.route("/sender/dashboard")
 def sender_dashboard():
-    packages = [{
-        "address": "Jablonna",
-        "boxId": "Jablonna-Stokrotka_1",
-        "size": "L",
-        "id": "123"
-    },
-    ]
+    if "user" not in session:
+        return 'Not authorized', 401
+
+    packages = get_packages()
+    
+    # packages = [{
+    #     "address": "Jablonna",
+    #     "boxId": "Jablonna-Stokrotka_1",
+    #     "size": "L",
+    #     "id": "123"
+    # },
+    # ]
     return render_template("packages.html", packages=packages)
 
+@app.route("/package/add", methods=["GET"])
+def add_package_form():
+    if "user" not in session:
+        return 'Not authorized', 401
+
+    return render_template("add_package.html")
+
+@app.route("/package/add", methods=["POST"])
+def add_package():
+    if "user" not in session:
+        return 'Not authorized', 401
+
+    package = {}
+    data = request.form
+    fields = ("receiver_name", "box_id", "size")
+
+    if data["size"] not in ["s", "m", "l"]:
+        return 'Niewłaściwy rozmiar paczki', 401
+
+    for field in fields:
+        package[field] = data[field]
+
+    if save_package(package):
+        flash(f"Pomyślnie dodano paczkę")
+        return redirect(url_for("sender_dashboard"))
+    else:
+        return "Database not working", 507
+
+@app.route("/package/delete/<id>")
+def delete_package():
+    if "user" not in session:
+        return 'Not authorized', 401
+
+    return render_template("packages.html", packages=packages)
 
 def save_user(user):
     salt = gensalt(5)
@@ -133,6 +169,45 @@ def verify_user(login, password):
 def is_user(login):
     return db.hexists(f"user:{login}", "password")
 
+def save_package(package):
+    package_id = str(uuid.uuid4())
+
+    login = session["user"]
+
+    db.hmset(f"package:{login}:{package_id}", package)
+
+    return True
+    
+def get_packages():
+    packages = []
+
+    login = session["user"]
+    keys = db.keys(pattern=f"package:{login}*")
+     
+    for key in keys:
+        package = db.hgetall(key)
+        package = decode_redis(package)
+        package["id"] = key.decode().split(":")[2]
+        packages.append(package)
+
+    return packages
+
+def decode_redis(src):
+    if isinstance(src, list):
+        rv = list()
+        for key in src:
+            rv.append(decode_redis(key))
+        return rv
+    elif isinstance(src, dict):
+        rv = dict()
+        for key in src:
+            rv[key.decode()] = decode_redis(src[key])
+        return rv
+    elif isinstance(src, bytes):
+        return src.decode()
+    else:
+        raise Exception("type not handled: " +type(src))
+
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)

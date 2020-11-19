@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<form method="POST" action="/package/add" id="addPackageForm">
+    <h1>Zarejestruj nową paczkę</h1>
+    <div class="content">
+        <label> Nazwa adresa
+            <input type="text" name="receiver_name" placeholder="Wprowadź dane osoby fizycznej/firmy"/>
+        </label>
+        <label>Identyfikator skrytki
+            <input type="text" name="box_id" placeholder="Wpropwadź unikalny identyfikator skrytki"/>
+        </label>
+        <fieldset>
+            
+            <legend> Rozmiar paczki </legend>
+
+            <div><label><input type="radio" name="size" value="s" checked><b>Mała</b> max: 10cm x 100cm x 50cm </label></div>
+            <div><label><input type="radio" name="size" value="m" checked><b>Średnia</b> max: 45cm x 100cm x 40cm </label></div>
+            <div><label><input type="radio" name="size" value="l" checked><b>Duża</b> max: 90cm x 100cm x 75cm </label></div>
+
+        </fieldset>
+        <input type="submit" class="valid" id="submit">           
+    </div>
+</form>
+{% endblock %}

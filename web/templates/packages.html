@@ -11,13 +11,13 @@
         {% for package in packages %}
             <div class="package">
                 <div class="package_details">
-                    <div><b>Nazwa adresta:</b> {{ package.address }}</div>
-                    <div><b>Identyfikator skrytki:</b> {{ package.boxId }}</div>
+                    <div><b>Nazwa adresta:</b> {{ package.receiver_name }}</div>
+                    <div><b>Identyfikator skrytki:</b> {{ package.box_id }}</div>
                     <div><b>Rozmiar paczki:</b> {{ package.size }}</div>
                     <div><b>Identyfikator paczki:</b> {{ package.id }}</div>
                 </div>
-                <a href="/package/delete/{{ package.id }}" class="link">
-                    <div class="package_delete"><p1>USUŃ</p1></div>
+                <a href="/package/delete/{{ package.id }}" class="link package_delete">
+                    <p1>USUŃ</p1>
                 </a>    
             </div>
         {% endfor %}
