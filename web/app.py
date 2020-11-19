@@ -14,7 +14,7 @@ load_dotenv()
 SESSION_TYPE="redis"
 SESSION_REDIS=db
 
-SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
@@ -96,6 +96,17 @@ def sender_logout():
     login = None
     return redirect(url_for("index"))
 
+@app.route("/sender/dashboard")
+def sender_dashboard():
+    packages = [{
+        "address": "Jablonna",
+        "boxId": "Jablonna-Stokrotka_1",
+        "size": "L",
+        "id": "123"
+    },
+    ]
+    return render_template("packages.html", packages=packages)
+
 
 def save_user(user):
     salt = gensalt(5)
@@ -123,4 +134,5 @@ def is_user(login):
     return db.hexists(f"user:{login}", "password")
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
+    # app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
+    app.run(host="0.0.0.0", port=5000)
