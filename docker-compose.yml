@@ -5,9 +5,14 @@ services:
         ports: 
             - "5000:5000"
         env_file: .env
+        volumes:
+            - ./web:/app
         depends_on: 
             - redis
     redis:
         image: redis:alpine
         ports:
             - "6379:6379"
+        volumes:
+            - ./redis-data:/data
+        entrypoint: redis-server --appendonly yes
