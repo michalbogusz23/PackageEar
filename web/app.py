@@ -3,9 +3,8 @@ from flask_session import Session
 from os import getenv
 from dotenv import load_dotenv
 from datetime import datetime
-from bcrypt import hashpw, gensalt, checkpw
 import sys # for debugging
-import uuid
+import db_handler
 
 from redis import Redis
 db = Redis(host='redis', port=6379, db=0)
@@ -47,7 +46,7 @@ def register():
     
     login = data["login"]
 
-    if is_user(login):
+    if db_handler.is_user(login):
         flash(f"Użytkownik: {login} już istnieje")
         return redirect(url_for("register_form"))
 
@@ -57,7 +56,7 @@ def register():
 
     user.pop("passwordCheck")
 
-    if save_user(user):
+    if db_handler.save_user(user):
         flash(f"Pomyślnie zarejestrowano! Zaloguj się poniżej")
     else:
         return "Database not working", 507
@@ -67,7 +66,7 @@ def register():
 @app.route('/sender/login', methods=['GET'])
 def login_form():
     if "user" in session:
-        return redirect(url_for("user"))
+        return redirect(url_for("index"))
     return render_template("login_form.html")
 
 @app.route('/sender/login', methods=['POST'])
@@ -79,7 +78,7 @@ def login():
         flash("Brakuje loginu i/lub hasła")
         return redirect(url_for("login_form"))
 
-    if not verify_user(login, password):
+    if not db_handler.verify_user(login, password):
         flash("Niewłaściwy login i/lub hasło")
         return redirect(url_for("login_form"))
 
@@ -91,14 +90,14 @@ def login():
 def sender_logout():
     session.clear()
     login = None
-    return redirect(url_for("index"))
+    return redirect(url_for("login_form"))
 
 @app.route("/sender/dashboard")
 def sender_dashboard():
     if "user" not in session:
         return 'Not authorized', 401
 
-    packages = get_packages()
+    packages = db_handler.get_packages()
     
     return render_template("packages.html", packages=packages)
 
@@ -124,7 +123,7 @@ def add_package():
     for field in fields:
         package[field] = data[field]
 
-    if save_package(package):
+    if db_handler.save_package(package):
         flash(f"Pomyślnie dodano paczkę")
         return redirect(url_for("sender_dashboard"))
     else:
@@ -135,81 +134,9 @@ def delete_package(id):
     if "user" not in session:
         return 'Not authorized', 401
 
-    delete_package_from_db(id)
+    db_handler.delete_package_from_db(id)
 
     return redirect(url_for("sender_dashboard"))
-
-def save_user(user):
-    salt = gensalt(5)
-    password = user['password'].encode()
-    hashed = hashpw(password, salt)
-    user['password'] = hashed
-
-    login = user['login']
-    del user['login']
-
-    db.hmset(f"user:{login}", user)
-
-    return True
-
-def verify_user(login, password):
-    password = password.encode()
-    hashed = db.hget(f'user:{login}', "password")
-    if not hashed:
-        print(f"ERROR: No password for {login}", file=sys.stderr)
-        return False
-
-    return checkpw(password, hashed)
-
-def is_user(login):
-    return db.hexists(f"user:{login}", "password")
-
-def save_package(package):
-    package_id = str(uuid.uuid4())
-
-    login = session["user"]
-
-    db.hmset(f"package:{login}:{package_id}", package)
-
-    return True
-    
-def get_packages():
-    packages = []
-
-    login = session["user"]
-    keys = db.keys(pattern=f"package:{login}*")
-     
-    for key in keys:
-        package = db.hgetall(key)
-        package = decode_redis(package)
-        package["id"] = key.decode().split(":")[2]
-        packages.append(package)
-
-    return packages
-
-def delete_package_from_db(id):
-    login = session["user"]
-    key = f"package:{login}:{id}"
-
-    db.delete(key)
-
-    return True
-
-def decode_redis(src):
-    if isinstance(src, list):
-        rv = list()
-        for key in src:
-            rv.append(decode_redis(key))
-        return rv
-    elif isinstance(src, dict):
-        rv = dict()
-        for key in src:
-            rv[key.decode()] = decode_redis(src[key])
-        return rv
-    elif isinstance(src, bytes):
-        return src.decode()
-    else:
-        raise Exception("type not handled: " +type(src))
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
