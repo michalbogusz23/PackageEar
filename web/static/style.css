@@ -5,21 +5,46 @@ body {
 }
 
 form {
-    background-color: #dddddd;
+    background-color: #cccccc;
     margin-bottom:10px;
     padding: 30px;
 }
+
 .header {
     padding: 40px;
     text-align: center;
     background: #1abc9c;
     color: white;
 }
-.mainPage {
+
+.main_page {
     padding: 20px;
     text-align: center;
     color: black;
+    background-color: #cccccc;
+    height:300px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
 }
+
+a.main_btn {
+    text-decoration: none;
+    color: white;
+}
+
+.main_btn {
+    margin-right: 50px
+}
+
+.btn {
+    border-style: solid;
+    border-width: 2px;
+    background-color: #b36b00;
+    padding: 15px;
+    /* width: 10%; */
+}
+
 .navbar {
     justify-content: space-between;
     align-items: center;
@@ -29,19 +54,42 @@ form {
     padding-bottom: 8px;
     background-color: #008e6e;
 }
+
 .nav {
-    display:inline-block;    
+    display:flex;    
     width:40%;
     text-align: center;
+    align-self: stretch;
+    justify-content: center;
+    align-items: center;
 }
+
 .nav_greeting {
     display:inline-block;    
     width:30%;
+    padding-left: 10px;
 }
+
 .nav_logout {
-    text-align: right;
-    display:inline-block;    
+    display:flex;    
     width:30%;
+    text-align: center;
+    padding-right: 10px;
+    align-self: stretch;
+    align-items: center;
+    justify-content: right;
+}
+
+.nav_btn {
+    text-decoration: none;
+    color: #333333;
+    font-weight: bolder;
+    font-size: large;
+    padding: 10px;  
+}
+
+.left {
+    border-right: 2px solid;
 }
 
 .flashes {
@@ -54,7 +102,8 @@ form {
 
 .btn_wrapper {
     display: flex; 
-    justify-content: flex-end
+    justify-content: flex-end;
+    background-color: #cccccc;
 }
 
 .add_btn {
@@ -118,7 +167,9 @@ input[type="radio"] {
     margin-top: -1px;
     vertical-align: middle;
 }
+
 * { box-sizing: border-box }
+
 input.invalid{
     border-color: #900;
     background-color: #FDD;
@@ -148,17 +199,21 @@ input:focus.invalid {
 label {
     font-weight: bold;
 }
+
 .left{
     float: left;
     width: 37%;
 }
+
 .right{
     float: right;
     width: 57%;
 }
+
 .clear{
     clear: left;
 }
+
 .content {
     padding-left: 10px;
     padding-right: 40px;

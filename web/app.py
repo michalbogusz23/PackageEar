@@ -14,7 +14,7 @@ load_dotenv()
 SESSION_TYPE="redis"
 SESSION_REDIS=db
 
-SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
@@ -90,7 +90,7 @@ def login():
 def sender_logout():
     session.clear()
     login = None
-    return redirect(url_for("login_form"))
+    return redirect(url_for("index"))
 
 @app.route("/sender/dashboard")
 def sender_dashboard():
@@ -139,5 +139,5 @@ def delete_package(id):
     return redirect(url_for("sender_dashboard"))
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
-    # app.run(host="0.0.0.0", port=5000, debug=True)
+    # app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
+    app.run(host="0.0.0.0", port=5000, debug=True)

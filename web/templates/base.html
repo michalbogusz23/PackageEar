@@ -11,32 +11,26 @@
   <p>Strona utworzona przez: <b>Michał Bogusz</b></p>
 </div>
 
-<div class="navbar">
-  {% if session['user'] %}
-    <span class="nav_greeting">
-      <div>
-        Witaj {{session['user']}}!
-      </div> 
-      <div>
-        Zalogowano o: {{session['login_date']}}
-      </div>
+{% if session['user'] %}
+  <div class="navbar">
+
+      <span class="nav_greeting">
+        <div>
+          Witaj {{session['user']}}!
+        </div> 
+        <div>
+          Zalogowano o: {{session['login_date']}}
+        </div>
+      </span>
+    
+    <span class="nav">
+      <a href="/" class="nav_btn left">Strona główna</a>
+      <a href="/sender/dashboard" class="nav_btn">Moje paczki</a>
     </span>
-  {% endif %}
-  
-  <span class="nav">
-    <a href="/" class="active">Strona główna</a>
-    <a href="/sender/register">Zarejestruj</a>
-    <a href="/sender/login">Zaloguj</a>
-    <a href="/sender/dashboard">Moje paczki</a>
-  </span>
 
-  {% if session['user'] %}
-    <span class="nav_logout"><a href="/sender/logout">Wyloguj</a></span>
-  {% endif %}
-
-  
-
-</div>
+      <span class="nav_logout"><a href="/sender/logout" class="nav_btn">Wyloguj</a></span>
+  </div>
+{% endif %}
 
 <div class="wrap">
     {% with messages = get_flashed_messages() %}
@@ -49,7 +43,9 @@
       {% endif %}
     {% endwith %}
 
-    {% block content %}{% endblock %}
+    {% block content %}
+    
+    {% endblock %}
 </div>
 
 <div class="footer">
