@@ -20,7 +20,6 @@ def verify_user(login, password):
     password = password.encode()
     hashed = db.hget(f'user:{login}', "password")
     if not hashed:
-        print(f"ERROR: No password for {login}", file=sys.stderr)
         return False
 
     return checkpw(password, hashed)
