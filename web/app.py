@@ -95,7 +95,8 @@ def sender_logout():
 @app.route("/sender/dashboard")
 def sender_dashboard():
     if "user" not in session:
-        return 'Not authorized', 401
+        flash("Dostęp tylko dla zalogowanych użytkowników!")
+        return redirect(url_for("index"))
 
     packages = db_handler.get_packages()
     
@@ -104,14 +105,16 @@ def sender_dashboard():
 @app.route("/package/add", methods=["GET"])
 def add_package_form():
     if "user" not in session:
-        return 'Not authorized', 401
+        flash("Dostęp tylko dla zalogowanych użytkowników!")
+        return redirect(url_for("index"))
 
     return render_template("add_package.html")
 
 @app.route("/package/add", methods=["POST"])
 def add_package():
     if "user" not in session:
-        return 'Not authorized', 401
+        flash("Dostęp tylko dla zalogowanych użytkowników!")
+        return redirect(url_for("index"))
 
     package = {}
     data = request.form
@@ -132,7 +135,8 @@ def add_package():
 @app.route("/package/delete/<id>")
 def delete_package(id):
     if "user" not in session:
-        return 'Not authorized', 401
+        flash("Dostęp tylko dla zalogowanych użytkowników!")
+        return redirect(url_for("index"))
 
     db_handler.delete_package_from_db(id)
 
