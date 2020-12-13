@@ -8,10 +8,7 @@ import db_handler
 
 from redis import StrictRedis
 
-
 load_dotenv()
-
-
 
 REDIS_HOST = getenv("REDIS_HOST")
 REDIS_PASS = getenv("REDIS_PASS")
