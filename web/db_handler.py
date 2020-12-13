@@ -1,6 +1,15 @@
-from app import session, db, app
+from flask import session
 from bcrypt import hashpw, gensalt, checkpw
 import uuid
+from dotenv import load_dotenv
+from os import getenv
+from redis import StrictRedis
+
+load_dotenv()
+REDIS_HOST = getenv("REDIS_HOST")
+REDIS_PASS = getenv("REDIS_PASS")
+REDIS_INSTANCE = getenv("REDIS_INSTANCE")
+db = StrictRedis(REDIS_HOST, db=REDIS_INSTANCE, password=REDIS_PASS)
 
 
 def save_user(user):

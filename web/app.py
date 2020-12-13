@@ -1,22 +1,15 @@
 from flask import Flask, render_template, request, make_response, session, redirect, url_for, flash
 from flask_session import Session
-from os import getenv
 from dotenv import load_dotenv
+from os import getenv
 from datetime import datetime
 import sys # for debugging
 import db_handler
 
 from redis import StrictRedis
 
-load_dotenv()
-
-REDIS_HOST = getenv("REDIS_HOST")
-REDIS_PASS = getenv("REDIS_PASS")
-REDIS_INSTANCE = getenv("REDIS_INSTANCE")
-db = StrictRedis(REDIS_HOST, db=REDIS_INSTANCE, password=REDIS_PASS)
-
 SESSION_TYPE="redis"
-SESSION_REDIS=db
+SESSION_REDIS=db_handler.db
 
 # SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
