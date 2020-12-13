@@ -6,15 +6,22 @@ from datetime import datetime
 import sys # for debugging
 import db_handler
 
-from redis import Redis
-db = Redis(host='redis', port=6379, db=0)
+from redis import StrictRedis
+
 
 load_dotenv()
+
+
+
+REDIS_HOST = getenv("REDIS_HOST")
+REDIS_PASS = getenv("REDIS_PASS")
+REDIS_INSTANCE = getenv("REDIS_INSTANCE")
+db = StrictRedis(REDIS_HOST, db=REDIS_INSTANCE, password=REDIS_PASS)
 
 SESSION_TYPE="redis"
 SESSION_REDIS=db
 
-SESSION_COOKIE_SECURE = True
+# SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
@@ -143,5 +150,5 @@ def delete_package(id):
     return redirect(url_for("sender_dashboard"))
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
-    # app.run(host="0.0.0.0", port=5000, debug=True)
+    # app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
+    app.run(host="0.0.0.0", port=5000, debug=True)

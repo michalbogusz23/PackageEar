@@ -7,12 +7,3 @@ services:
         env_file: .env
         volumes:
             - ./web:/app
-        depends_on: 
-            - redis
-    redis:
-        image: redis:alpine
-        ports:
-            - "6379:6379"
-        expose:
-            - "6379"
-        entrypoint: redis-server --appendonly yes
