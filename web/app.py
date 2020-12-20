@@ -1,21 +1,42 @@
 from flask import Flask, render_template, request, make_response, session, redirect, url_for, flash
 from flask_session import Session
-from dotenv import load_dotenv
 from os import getenv
 from datetime import datetime
-import sys # for debugging
+from jwt import encode, decode
+from datetime import datetime, timedelta
+
+import requests
+import sys
 import db_handler
+import json
 
 from redis import StrictRedis
 
 SESSION_TYPE="redis"
 SESSION_REDIS=db_handler.db
+API_ADDRESS = 'https://secret-island-24073.herokuapp.com/'
 
 # SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
+JWT_SECRET = getenv('JWT_SECRET')
+try:
+    JWT_EXP = int(getenv('JWT_EXP'))
+except ValueError:
+    JWT_EXP = 120
+except TypeError:
+    JWT_EXP = 120
+
 ses = Session(app)
+
+def generate_token(user):
+    payload = {
+        'usr': user,
+        # 'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP)
+    }
+    token = encode(payload, JWT_SECRET, algorithm='HS256')
+    return token.decode()
 
 @app.route('/')
 def index():
@@ -95,7 +116,16 @@ def sender_dashboard():
         flash("Dostęp tylko dla zalogowanych użytkowników!")
         return redirect(url_for("index"))
 
-    packages = db_handler.get_packages()
+    username = session["user"]
+    jwt_token = generate_token(username)
+    headers = {"Authorization": "Bearer " + jwt_token}
+    r = requests.get(API_ADDRESS + 'package', headers=headers)
+    if r.status_code != 200:
+        return {'error': 'Unauthorized'}, 401
+
+    response = r.json()
+    print(response, file=sys.stderr)
+    packages = response['packages']
     
     return render_template("packages.html", packages=packages)
 
@@ -122,6 +152,9 @@ def add_package():
 
     for field in fields:
         package[field] = data[field]
+
+    print(package, file=sys.stderr)
+
 
     if db_handler.save_package(package):
         flash(f"Pomyślnie dodano paczkę")

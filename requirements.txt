@@ -5,3 +5,5 @@ redis
 bcrypt
 gunicorn
 pyopenssl
+pyjwt
+requests

@@ -1,7 +1,0 @@
-Flask
-python-dotenv
-Flask-Session
-redis
-bcrypt
-gunicorn
-pyopenssl
