@@ -11,9 +11,21 @@ wymagane zainstalowanie redis oraz bcrypt
 
 ## dane logowania
 
+Pierwszy użytkownik:
+
 * login: admin
 * haslo: admin
 
+Drugi użytkownik:
+
+* login: WhyIsTheRumGone
+* admin: savvy
+
 ## Adres aplikacji
 
-https://localhost:5000
+* klient: https://localhost:5000
+* serwer: https://localhost:5050
+
+## Aplikacja na heroku
+
+https://mighty-journey-25658.herokuapp.com/
