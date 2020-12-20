@@ -34,6 +34,7 @@ def generate_header_with_token():
     username = session["user"]
     payload = {
         'usr': username,
+        'type': 'sender'
         # 'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP)
     }
     token = encode(payload, JWT_SECRET, algorithm='HS256')
@@ -120,15 +121,15 @@ def sender_dashboard():
         return redirect(url_for("index"))
 
     headers = generate_header_with_token()
-    r = requests.get(API_ADDRESS + 'package', headers=headers)
+    r = requests.get(API_ADDRESS + 'label', headers=headers)
     if r.status_code != 200:
         return {'error': 'Unauthorized'}, 401
 
     response = r.json()
     print(response, file=sys.stderr)
-    packages = response['packages']
+    labels = response['labels']
     
-    return render_template("packages.html", packages=packages)
+    return render_template("packages.html", packages=labels)
 
 @app.route("/package/add", methods=["GET"])
 def add_package_form():
@@ -144,7 +145,7 @@ def add_package():
         flash("Dostęp tylko dla zalogowanych użytkowników!")
         return redirect(url_for("index"))
 
-    package = {}
+    label = {}
     data = request.form
     fields = ("receiver_name", "box_id", "size")
 
@@ -152,11 +153,11 @@ def add_package():
         return 'Niewłaściwy rozmiar paczki', 401
 
     for field in fields:
-        package[field] = data[field]
+        label[field] = data[field]
 
-    print(package, file=sys.stderr)
+    print(label, file=sys.stderr)
     headers = generate_header_with_token()
-    r = requests.post(API_ADDRESS + 'package', headers=headers, json=package)
+    r = requests.post(API_ADDRESS + 'label', headers=headers, json=label)
     if r.status_code != 200:
         return {'error': 'Unauthorized'}, 401
     else: 
@@ -171,7 +172,7 @@ def delete_package(id):
         return redirect(url_for("index"))
 
     headers = generate_header_with_token()
-    r = requests.delete(API_ADDRESS + 'package', headers=headers)
+    r = requests.delete(API_ADDRESS + 'label/' + str(id), headers=headers)
     if r.status_code != 200:
         return {'error': 'Unauthorized'}, 401
     else: 
