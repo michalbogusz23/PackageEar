@@ -30,13 +30,16 @@ except TypeError:
 
 ses = Session(app)
 
-def generate_token(user):
+def generate_header_with_token():
+    username = session["user"]
     payload = {
-        'usr': user,
+        'usr': username,
         # 'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP)
     }
     token = encode(payload, JWT_SECRET, algorithm='HS256')
-    return token.decode()
+    token = token.decode()
+    headers = {"Authorization": "Bearer " + token}
+    return headers
 
 @app.route('/')
 def index():
@@ -116,9 +119,7 @@ def sender_dashboard():
         flash("Dostęp tylko dla zalogowanych użytkowników!")
         return redirect(url_for("index"))
 
-    username = session["user"]
-    jwt_token = generate_token(username)
-    headers = {"Authorization": "Bearer " + jwt_token}
+    headers = generate_header_with_token()
     r = requests.get(API_ADDRESS + 'package', headers=headers)
     if r.status_code != 200:
         return {'error': 'Unauthorized'}, 401
@@ -154,13 +155,14 @@ def add_package():
         package[field] = data[field]
 
     print(package, file=sys.stderr)
-
-
-    if db_handler.save_package(package):
+    headers = generate_header_with_token()
+    r = requests.post(API_ADDRESS + 'package', headers=headers, json=package)
+    if r.status_code != 200:
+        return {'error': 'Unauthorized'}, 401
+    else: 
         flash(f"Pomyślnie dodano paczkę")
         return redirect(url_for("sender_dashboard"))
-    else:
-        return "Database not working", 507
+
 
 @app.route("/package/delete/<id>")
 def delete_package(id):
@@ -168,9 +170,12 @@ def delete_package(id):
         flash("Dostęp tylko dla zalogowanych użytkowników!")
         return redirect(url_for("index"))
 
-    db_handler.delete_package_from_db(id)
-
-    return redirect(url_for("sender_dashboard"))
+    headers = generate_header_with_token()
+    r = requests.delete(API_ADDRESS + 'package', headers=headers)
+    if r.status_code != 200:
+        return {'error': 'Unauthorized'}, 401
+    else: 
+        return redirect(url_for("sender_dashboard"))
 
 if __name__ == '__main__':
     # app.run(host="0.0.0.0", port=5000, ssl_context='adhoc')
