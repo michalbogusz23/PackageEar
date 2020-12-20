@@ -34,8 +34,8 @@ def generate_header_with_token():
     username = session["user"]
     payload = {
         'usr': username,
-        'type': 'sender'
-        # 'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP)
+        'type': 'sender',
+        'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP)
     }
     token = encode(payload, JWT_SECRET, algorithm='HS256')
     token = token.decode()
