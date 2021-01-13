@@ -4,6 +4,7 @@ from os import getenv
 from datetime import datetime
 from jwt import encode, decode
 from datetime import datetime, timedelta
+from time import sleep
 
 import requests
 import sys
@@ -15,6 +16,8 @@ from redis import StrictRedis
 SESSION_TYPE="redis"
 SESSION_REDIS=db_handler.db
 API_ADDRESS = 'https://secret-island-24073.herokuapp.com/'
+
+NOTIFICATIONS = ['foo', 'bar', 'baz']
 
 # SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
@@ -30,17 +33,26 @@ except TypeError:
 
 ses = Session(app)
 
-def generate_header_with_token():
-    username = session["user"]
-    payload = {
-        'usr': username,
-        'type': 'sender',
-        'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP)
-    }
-    token = encode(payload, JWT_SECRET, algorithm='HS256')
-    token = token.decode()
-    headers = {"Authorization": "Bearer " + token}
-    return headers
+@app.route('/notifications')
+def notifications():
+    new_notifications = get_notifications()
+    while not new_notifications:
+        sleep(1)
+        print("Checking ... ")
+        new_notifications = get_notifications()
+    return new_notifications
+
+@app.route('/notify/<msg>')
+def notify(msg):
+    NOTIFICATIONS.append(msg)
+    print("Now the notifications are:")
+    print(NOTIFICATIONS)
+    return make_response('', 204)
+
+def get_notifications():
+    if len(NOTIFICATIONS) > 0:
+        return NOTIFICATIONS.pop()
+    return None
 
 @app.route('/')
 def index():
@@ -113,6 +125,18 @@ def sender_logout():
     session.clear()
     login = None
     return redirect(url_for("index"))
+
+def generate_header_with_token():
+    username = session["user"]
+    payload = {
+        'usr': username,
+        'type': 'sender',
+        'exp': datetime.utcnow() + timedelta(seconds=JWT_EXP)
+    }
+    token = encode(payload, JWT_SECRET, algorithm='HS256')
+    token = token.decode()
+    headers = {"Authorization": "Bearer " + token}
+    return headers
 
 @app.route("/sender/dashboard")
 def sender_dashboard():
