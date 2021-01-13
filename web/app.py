@@ -17,8 +17,6 @@ SESSION_TYPE="redis"
 SESSION_REDIS=db_handler.db
 API_ADDRESS = 'https://secret-island-24073.herokuapp.com/'
 
-NOTIFICATIONS = ['foo', 'bar', 'baz']
-
 # SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -35,24 +33,18 @@ ses = Session(app)
 
 @app.route('/notifications')
 def notifications():
-    new_notifications = get_notifications()
+    new_notifications = db_handler.get_notifications()
     while not new_notifications:
         sleep(1)
         print("Checking ... ")
-        new_notifications = get_notifications()
+        new_notifications = db_handler.get_notifications()
     return new_notifications
 
 @app.route('/notify/<msg>')
 def notify(msg):
-    NOTIFICATIONS.append(msg)
+    db_handler.add_notifications(msg)
     print("Now the notifications are:")
-    print(NOTIFICATIONS)
     return make_response('', 204)
-
-def get_notifications():
-    if len(NOTIFICATIONS) > 0:
-        return NOTIFICATIONS.pop()
-    return None
 
 @app.route('/')
 def index():
