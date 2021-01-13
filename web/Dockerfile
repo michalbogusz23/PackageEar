@@ -5,4 +5,4 @@ ADD requirements.txt /app
 RUN python3 -m pip install -r requirements.txt
 ADD . .
 EXPOSE 5000
-CMD ["python3", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
