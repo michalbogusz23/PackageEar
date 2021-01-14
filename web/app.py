@@ -205,5 +205,5 @@ def delete_package(id):
         return redirect(url_for("sender_dashboard"))
 
 if __name__ == '__main__':
-    # app.run(host="0.0.0.0", ssl_context='adhoc')
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", ssl_context='adhoc')
+    # app.run(host="0.0.0.0", port=5000, debug=True)
