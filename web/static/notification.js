@@ -2,6 +2,7 @@ function check_notifications() {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if(xhr.readyState == 4 && xhr.status == 200) {
+            alert(xhr.responseText)
             console.info(xhr.responseText);
             setTimeout(check_notifications, 1000);
         }
