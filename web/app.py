@@ -16,6 +16,7 @@ from redis import StrictRedis
 SESSION_TYPE="redis"
 SESSION_REDIS=db_handler.db
 API_ADDRESS = 'https://secret-island-24073.herokuapp.com/'
+# API_ADDRESS = 'http://localhost:5050/'
 
 # SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
@@ -33,12 +34,21 @@ ses = Session(app)
 
 @app.route('/notifications')
 def notifications():
-    new_notifications = db_handler.get_notifications()
+    new_notifications = ask_for_notification()
     while not new_notifications:
         sleep(1)
         print("Checking ... ")
-        new_notifications = db_handler.get_notifications()
+        new_notifications = ask_for_notification()
     return new_notifications
+
+def ask_for_notification():
+    headers = generate_header_with_token()
+    r = requests.get(API_ADDRESS + 'notification', headers=headers)
+    if r.status_code != 200:
+        return {'error': 'Unauthorized'}, 401
+    else: 
+        print(r.json, file=sys.stderr)
+        return json.loads(r.text)['msg']
 
 @app.route('/notify/<msg>')
 def notify(msg):
