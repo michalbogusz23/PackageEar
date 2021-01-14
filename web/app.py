@@ -18,7 +18,7 @@ SESSION_REDIS=db_handler.db
 API_ADDRESS = 'https://secret-island-24073.herokuapp.com/'
 # API_ADDRESS = 'http://localhost:5050/'
 
-# SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.secret_key = getenv('SECRET_KEY')
